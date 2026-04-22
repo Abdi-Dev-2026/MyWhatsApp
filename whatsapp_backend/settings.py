@@ -2,42 +2,39 @@ import os
 import dj_database_url
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# 1. Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-(_gzevg$b4)99l6=xw(3r9k74e2f5sw2*0o=gvoi1j#n7sn=(d')
-
-# SECURITY WARNING: don't run with debug turned on in production!
+# 2. Security Settings
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-bad-for-prod')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# Render iyo Host-yada kale
-ALLOWED_HOSTS = ['*', '.render.com']
+# 3. Allowed Hosts & CSRF
+ALLOWED_HOSTS = ['*', '.railway.app', '.render.com']
 
-# CSRF Origins
 CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.render.com',
     'https://facebook-cranial-crabbing.ngrok-free.dev',
-    'https://*.up.railway.app',
-    'https://*.render.com', # Render si uu u aqbalo
 ]
 
-# Application definition
+# 4. Application definition
 INSTALLED_APPS = [
-    'daphne',      # 1. Tan waa inay ugu horreysaa
-    'channels',    # 2. Tan xigta
+    'daphne',      # Waa inay kow ahaataa (ASGI)
+    'channels',    # Waa inay labo ahaataa
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic', # Si static-ga loogu arko local-ka
+    'whitenoise.runserver_nostatic', 
     'django.contrib.staticfiles',
     'chat',        # App-kaaga chat-ka
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # WHITE NOISE SI CSS-KU U SHAQEEYO
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Si CSS-ku u shaqeeyo
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -65,17 +62,16 @@ TEMPLATES = [
     },
 ]
 
-# 3. ASGI Application
+# 5. ASGI & Channels
 ASGI_APPLICATION = 'whatsapp_backend.asgi.application'
 
-# 4. Channel Layers
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer', 
     },
 }
 
-# --- DATABASE (NEON CONNECTION) ---
+# 6. Database (Neon.tech Connection)
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
@@ -84,7 +80,7 @@ DATABASES = {
     )
 }
 
-# Password validation
+# 7. Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -92,30 +88,29 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# LOGIN SETTINGS
+# 8. Login/Logout
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
-# Internationalization
+# 9. Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# --- STATIC FILES ---
+# 10. Static & Media Files
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = BASE_DIR / 'staticfiles' # Meesha Render uu ka akhrinayo CSS
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# --- MEDIA FILES ---
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- HTTPS & SECURITY (MUHIIM U AH WEBRTC) ---
+# 11. Production Security (WebRTC & HTTPS)
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
