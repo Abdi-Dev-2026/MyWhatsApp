@@ -328,3 +328,52 @@ window.onclick = function(event) {
     if (!event.target.closest('.sticker-menu') && !event.target.closest('.msg')) hideStickerMenu();
     if (event.target.id === "profileModal") document.getElementById("profileModal").style.display = "none";
 };
+// 1. Furista Database-ka Browser-ka
+const dbRequest = indexedDB.open("WhatsAppOfflineDB", 1);
+
+dbRequest.onupgradeneeded = (event) => {
+    let db = event.target.result;
+    if (!db.objectStoreNames.contains("messages")) {
+        db.createObjectStore("messages", { keyPath: "id", autoIncrement: true });
+    }
+};
+
+// 2. Shaqada Kaydinta Fariinta
+function saveMessageOffline(sender, message, timestamp) {
+    const dbRequest = indexedDB.open("WhatsAppOfflineDB", 1);
+    dbRequest.onsuccess = (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction("messages", "readwrite");
+        const store = transaction.objectStore("messages");
+        store.add({ sender, message, timestamp });
+    };
+}
+
+// 3. Shaqada soo bixinta fariimaha marka internet-ku go'an yahay
+function loadOfflineMessages() {
+    const dbRequest = indexedDB.open("WhatsAppOfflineDB", 1);
+    dbRequest.onsuccess = (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction("messages", "readonly");
+        const store = transaction.objectStore("messages");
+        const getAll = store.getAll();
+
+        getAll.onsuccess = () => {
+            const messages = getAll.result;
+            messages.forEach(msg => {
+                // Halkan koodhkaaga fariinta shaashadda ku soo bandhiga geli
+                console.log("Offline Msg:", msg.message);
+            });
+        };
+    };
+}
+window.addEventListener('offline', () => {
+    document.getElementById('status-bar').innerText = "Internet-ka ayaa kaa go'an (Offline Mode)";
+    document.getElementById('status-bar').style.backgroundColor = "orange";
+    loadOfflineMessages(); // Soo bandhig fariimihii hore ee ku kaydsanaa browser-ka
+});
+
+window.addEventListener('online', () => {
+    document.getElementById('status-bar').innerText = "Online";
+    document.getElementById('status-bar').style.backgroundColor = "#00a884";
+});

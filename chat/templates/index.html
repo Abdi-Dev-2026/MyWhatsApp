@@ -386,7 +386,15 @@
       navigator.serviceWorker.register("{% static 'sw.js' %}");
     });
   }
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/static/service-worker.js')
+        .then(reg => console.log('Service Worker Registered!'))
+        .catch(err => console.log('Service Worker Failed!', err));
+    });
+  }
 </script>
 <script src="{% static 'js/index.js' %}" defer></script>
-  </body>
+  <link rel="manifest" href="/static/manifest.json">
+</body>
 </html>
