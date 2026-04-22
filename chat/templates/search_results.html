@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natiijada Baaritaanka</title>
+    <style>
+        :root {
+            --bg-dark: #111b21;
+            --card-bg: #202c33;
+            --wa-green: #00a884;
+            --text-main: #e9edef;
+            --text-dim: #8696a0;
+        }
+
+        body { 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            padding-top: 80px; 
+            margin: 0;
+        }
+
+        .result-card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 24px; 
+            width: 340px; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profile-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 20px;
+        }
+
+        .profile-img { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            border: 3px solid var(--wa-green);
+            background: #6a7175;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h3 { 
+            margin: 10px 0 5px 0; 
+            font-size: 22px; 
+            font-weight: 500; 
+            color: var(--text-main);
+        }
+
+        .sid-text { 
+            color: var(--wa-green); 
+            font-weight: bold; 
+            margin-bottom: 25px; 
+            font-size: 15px; 
+            letter-spacing: 1px;
+        }
+        
+        .btn-add { 
+            background: var(--wa-green); 
+            color: #111b21; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 30px; 
+            font-weight: bold; 
+            font-size: 16px;
+            cursor: pointer; 
+            width: 100%; 
+            transition: 0.3s ease;
+            display: block;
+        }
+
+        .btn-add:hover { 
+            background: #06cf9c; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 168, 132, 0.3);
+        }
+        
+        .error-title { color: #f25c5c; margin-bottom: 10px; }
+        
+        .back-link { 
+            display: inline-block; 
+            margin-top: 25px; 
+            color: var(--wa-green); 
+            text-decoration: none; 
+            font-size: 14px; 
+            font-weight: 500;
+        }
+
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="result-card">
+        {% if found_user %}
+            <div class="profile-container">
+                <div class="profile-img">
+                    {% if found_user.profile_pic %}
+                        <img src="{{ found_user.profile_pic.url }}" alt="Profile Picture">
+                    {% else %}
+                        👤
+                    {% endif %}
+                </div>
+            </div>
+
+            <h3>{{ found_user.user.first_name }} {{ found_user.user.last_name }}</h3>
+            <p class="sid-text">ID: {{ found_user.system_id }}</p>
+            
+            <form action="{% url 'send_request' found_user.system_id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn-add">U dir fariin codsi (Add)</button>
+            </form>
+        {% else %}
+            <div style="font-size: 60px; margin-bottom: 20px;">🔍</div>
+            <h3 class="error-title">Lama Helin!</h3>
+            <p style="color: var(--text-dim); line-height: 1.5;">{{ error }}</p>
+        {% endif %}
+        
+        <a href="{% url 'search_contact' %}" class="back-link">← Dib u raadi saaxiib</a>
+    </div>
+</body>
+</html>

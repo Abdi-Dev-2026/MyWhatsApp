@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diiwaangelintu waa guul!</title>
+    <style>
+        body {
+            background-color: #111b21;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: #202c33;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            max-width: 400px;
+        }
+        .id-box {
+            background-color: #00a884;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        a {
+            color: #00a884;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Diiwaangelintaadu waa Guul! 🎉</h2>
+        <p>Kani waa ID-gaaga gaarka ah ee aad ku gali karto WhatsApp-ka:</p>
+        <div class="id-box">{{ new_id }}</div>
+        <p>Fadlan meel ku qoro, waayo kani waa Username-kaaga.</p>
+        <a href="{% url 'login' %}">Halkan guji si aad u gashid (Login)</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp - Soo gal</title>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+    
+    <style>
+        :root {
+            --bg-dark: #111b21;
+            --card-bg: #222d34;
+            --wa-green: #00a884;
+            --text-main: #e9edef;
+            --input-bg: #2a3942;
+            --text-dim: #8696a0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            /* Background pattern-ka WhatsApp */
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-blend-mode: overlay;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-main);
+            overflow: hidden; /* Si uusan scroll u sameyn bogga login-ka */
+        }
+
+        .login-container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .logo { 
+            width: 80px; 
+            margin-bottom: 20px; 
+        }
+
+        h2 { 
+            margin-bottom: 30px; 
+            font-weight: 500; 
+            font-size: 24px;
+            color: var(--text-main);
+        }
+
+        .error-msg {
+            background: #f25c5c;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            background-color: var(--input-bg);
+            color: white;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--wa-green);
+            box-shadow: 0 0 5px rgba(0, 168, 132, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 40px;
+            border: none;
+            background-color: var(--wa-green);
+            color: #111b21;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #06cf9c;
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .footer-text { 
+            margin-top: 25px; 
+            font-size: 14px; 
+            color: var(--text-dim); 
+        }
+
+        .footer-text a { 
+            color: var(--wa-green); 
+            text-decoration: none; 
+            font-weight: bold;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Logo" class="logo">
+        <h2>Soo gal WhatsApp</h2>
+        
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            
+            <input type="text" 
+                   name="system_id" 
+                   placeholder="Geli ID-gaaga (Tusaale: B1)" 
+                   required 
+                   autocomplete="username">
+            
+            <input type="password" 
+                   name="password" 
+                   placeholder="Password" 
+                   required 
+                   autocomplete="current-password">
+            
+            <button type="submit">Log In</button>
+        </form>
+
+        <div class="footer-text">
+            Ma lahad akoon? <a href="{% url 'signup' %}">Is-diiwaangeli</a>
+        </div>
+    </div>
+
+    <script src="{% static 'js/login.js' %}" defer></script>
+</body>
+</html>

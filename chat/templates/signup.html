@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp - Ku soo dhowaw</title>
+    <style>
+        /* Midabada Rasmiga ah */
+        :root {
+            --bg-dark: #111b21;
+            --card-bg: #222d34;
+            --wa-green: #00a884;
+            --text-main: #e9edef;
+            --input-bg: #2a3942;
+            --text-dim: #8696a0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-blend-mode: overlay;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-main);
+        }
+
+        .signup-container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        p {
+            color: var(--text-dim);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background-color: var(--input-bg);
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--wa-green);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            border-radius: 40px;
+            border: none;
+            background-color: var(--wa-green);
+            color: #111b21;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background-color: #06cf9c;
+            transform: scale(1.02);
+        }
+
+        /* Qaybta macluumaadka System ID-ga */
+        .info-box {
+            background: rgba(0, 168, 132, 0.1);
+            border: 1px solid var(--wa-green);
+            color: var(--wa-green);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .error-msg {
+            background: #f25c5c;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .footer-text {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .footer-text a {
+            color: var(--wa-green);
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="signup-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Logo" class="logo">
+        
+        <h2>Abuur Akoon</h2>
+        <p>Ku biir WhatsApp-kaaga gaarka ah</p>
+
+        <div class="info-box">
+            System-ka ayaa kuu samayn doona <strong>ID gaar ah</strong> (B0-ZZ1000) oo aad u isticmaashid soo gelitaanka.
+        </div>
+
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" name="full_name" placeholder="Magacaaga oo saddexan" required>
+            </div>
+            
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password cusub" required>
+            </div>
+            
+            <button type="submit">Sign Up</button>
+        </form>
+
+        <div class="footer-text">
+            Haba hore u lahayd akoon? <a href="{% url 'login' %}">Soo gal</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raadi Saaxiib</title>
+    <style>
+        :root {
+            --bg-dark: #111b21;
+            --header-bg: #202c33;
+            --wa-green: #00a884;
+            --text-main: #e9edef;
+            --input-bg: #2a3942;
+            --error-red: #f25c5c;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: var(--header-bg);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+
+        .search-box {
+            margin-top: 50px;
+            width: 90%;
+            max-width: 400px;
+            background: var(--header-bg);
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .error-msg {
+            background-color: var(--error-red);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: var(--input-bg);
+            color: white;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--wa-green);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--wa-green);
+            border: none;
+            border-radius: 30px;
+            color: #111b21;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background-color: #06cf9c;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            color: var(--wa-green);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'index' %}" style="color: white; text-decoration: none; font-size: 24px;">←</a>
+        <h2 style="margin: 0; font-size: 18px; font-weight: 500;">Raadi qof cusub</h2>
+    </header>
+
+    <div class="search-box">
+        <p style="margin-top: 0; color: #8696a0;">Geli ID-ga qofka aad raadinayso</p>
+        
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="target_id" placeholder="Tusaale: B10" required autofocus>
+            <button type="submit">Raadi</button>
+        </form>
+        
+        <a href="{% url 'index' %}" class="back-link">Ku laabo Sheekooyinka</a>
+    </div>
+
+    <script src="{% static 'js/search.js' %}" defer></script>
+</body>
+</html>

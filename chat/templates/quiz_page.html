@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Challenge: {{ quiz.title }}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0b141a;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .quiz-header {
+            background: #202c33;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            color: #00a884;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .quiz-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .question-card {
+            background: #202c33;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #00a884;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        /* --- STYLE-KA CUSUB EE OPTION-KA --- */
+        .option-item {
+            background: #111b21;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-item:hover {
+            border-color: #00a884;
+            background: #2a3942;
+        }
+
+        /* Qari Radio button-ka caadiga ah si aan style-ka u qurxino */
+        .option-item input[type="radio"] {
+            accent-color: #00a884;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: #00a884;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="quiz-header">
+        <a href="/" class="back-btn">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <h2>{{ quiz.title }}</h2>
+    </header>
+
+    <div class="quiz-container">
+        <p style="color: #8696a0;">Fadlan ka jawaab su'aalaha hoos ku qoran:</p>
+
+        <form id="quizForm">
+            {% for q in questions %}
+            <div class="question-card">
+                <h3>{{ forloop.counter }}. {{ q.question_text }}</h3> <div class="options-list">
+                    <label class="option-item">
+                        <input type="radio" name="q_{{ q.id }}" value="1" data-correct="{{ q.correct_option }}">
+                        {{ q.option1 }}
+                    </label>
+                    <label class="option-item">
+                        <input type="radio" name="q_{{ q.id }}" value="2" data-correct="{{ q.correct_option }}">
+                        {{ q.option2 }}
+                    </label>
+                    <label class="option-item">
+                        <input type="radio" name="q_{{ q.id }}" value="3" data-correct="{{ q.correct_option }}">
+                        {{ q.option3 }}
+                    </label>
+                    <label class="option-item">
+                        <input type="radio" name="q_{{ q.id }}" value="4" data-correct="{{ q.correct_option }}">
+                        {{ q.option4 }}
+                    </label>
+                </div>
+            </div>
+            {% empty %}
+            <div class="question-card" style="text-align: center;">
+                <p>Weli su'aalo laguma darin tartankan.</p>
+            </div>
+            {% endfor %}
+
+            {% if questions %}
+            <button type="button" class="submit-btn" onclick="checkResults()">
+                Gudbi Jawaabaha
+            </button>
+            {% endif %}
+        </form>
+    </div>
+<script src="{% static 'js/quiz.js' %}" defer></script>
+</body>
+</html>

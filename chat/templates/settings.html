@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <style>
+        body { background-color: #0b141a; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .settings-card { background: #202c33; padding: 30px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
+        .profile-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #00a884; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; background: #2a3942; color: white; box-sizing: border-box; }
+        button { background: #00a884; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #008f6f; }
+        .back { color: #8696a0; text-decoration: none; display: block; margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="settings-card">
+        <h2>Settings</h2>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if profile.profile_pic %}
+                <img src="{{ profile.profile_pic.url }}" class="profile-img">
+            {% else %}
+                <img src="/media/default.jpg" class="profile-img">
+            {% endif %}
+
+            <input type="file" name="profile_image" accept="image/*">
+            
+            <input type="text" name="full_name" value="{{ profile.full_name }}" placeholder="Magacaaga">
+            <textarea name="about" placeholder="About me">{{ profile.about }}</textarea>
+            
+            <button type="submit">Save Changes</button>
+        </form>
+
+        <a href="{% url 'index' %}" class="back">Dib u noqo</a>
+    </div>
+    
+    <script src="{% static 'js/settings.js' %}" defer></script>
+</body>
+</html>

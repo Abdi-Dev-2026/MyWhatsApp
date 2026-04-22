@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abuur Status - WhatsApp Clone</title>
+    <style>
+        :root {
+            --bg-dark: #111b21;
+            --panel-bg: #202c33;
+            --wa-green: #00a884;
+            --text-main: #e9edef;
+            --text-dim: #8696a0;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        .upload-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .back-btn {
+            color: var(--wa-green);
+            text-decoration: none;
+            font-size: 1.5rem;
+        }
+
+        .form-card {
+            background-color: var(--panel-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-card label {
+            display: block;
+            color: var(--wa-green);
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Qurxinta Input-yada */
+        textarea {
+            width: 100%;
+            background: #2a3942;
+            border: 1px solid #3b4a54;
+            border-radius: 8px;
+            color: white;
+            padding: 12px;
+            font-size: 1rem;
+            outline: none;
+            resize: none;
+            min-height: 100px;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            border-color: var(--wa-green);
+        }
+
+        .file-input-wrapper {
+            background: #2a3942;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input[type="file"] {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #2a3942;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--wa-green);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-submit:hover {
+            background-color: #01c39a;
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 8px;
+            display: block;
+        }
+
+        .hint {
+            background: rgba(0, 168, 132, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid var(--wa-green);
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #d1d7db;
+        }
+    </style>
+</head>
+<body>
+
+<div class="upload-container">
+    <div class="header">
+        <a href="{% url 'status_list' %}" class="back-btn">←</a>
+        <h3>Abuur Status Cusub</h3>
+    </div>
+
+    <div class="hint">
+        💡 <strong>Talo:</strong> Haddii aad sawir ama muuqaal soo doorato, qoraalka aad hoos ku qorto wuxuu noqon doonaa <em>Caption</em> (Qoraal hoose).
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-card">
+            <label>Qoraalka Status-ka / Caption</label>
+            {{ form.text_content }}
+            <span class="info-text">Ku qor dareenkaaga ama faallo ku saabsan sawirka.</span>
+        </div>
+
+        <div class="form-card">
+            <label>Soo geli Sawir ama Muuqaal</label>
+            <div class="file-input-wrapper">
+                <div style="margin-bottom: 5px;">
+                    <span style="font-size: 0.8rem; color: var(--wa-green); display: block; margin-bottom: 5px;">📷 Sawir:</span>
+                    {{ form.image }}
+                </div>
+                <hr style="border: 0.5px solid #3b4a54; width: 100%;">
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--wa-green); display: block; margin-bottom: 5px;">🎥 Muuqaal:</span>
+                    {{ form.video }}
+                </div>
+            </div>
+            <span class="info-text">Muuqaalku waa inuu ka yaraadaa 20MB.</span>
+        </div>
+
+        <div class="form-card">
+            <label>Midabka Background-ka</label>
+            <div class="color-picker-wrapper">
+                {{ form.bg_color }}
+                <span style="font-size: 0.85rem; color: var(--text-dim);">Dooro midab haddii aad qoraal keliya dhigayso.</span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            DHAJI STATUS-KA
+        </button>
+    </form>
+</div>
+<script src="{% static 'js/upload_status.js' %}" defer></script>
+</body>
+</html>

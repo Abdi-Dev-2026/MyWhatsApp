@@ -1,0 +1,374 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Updates</title>
+    <style>
+        :root {
+            --wa-bg: #111b21;
+            --wa-surface: #202c33;
+            --wa-green: #00a884;
+            --wa-text: #e9edef;
+            --wa-secondary: #8696a0;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--wa-bg);
+            color: var(--wa-text);
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .status-container {
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .status-header {
+            color: var(--wa-secondary);
+            margin: 20px 0 10px 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 10px;
+        }
+
+        .status-item:hover { background-color: var(--wa-surface); }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 58px;
+            height: 58px;
+            padding: 2px;
+            border-radius: 50%;
+            border: 2.5px solid var(--wa-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .no-status-border { border: none; }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .add-status-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--wa-green);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid var(--wa-bg);
+            font-size: 14px;
+        }
+
+        .status-info {
+            flex: 1;
+            border-bottom: 0.5px solid #222d34;
+            padding-bottom: 12px;
+        }
+
+        .status-info h4 { margin: 0; font-size: 16px; font-weight: 500; }
+        .status-info p { color: var(--wa-secondary); margin: 4px 0 0 0; font-size: 14px; }
+
+        /* --- Viewer Overlay --- */
+        #statusViewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 9999;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            gap: 4px;
+            z-index: 10001;
+        }
+
+        .progress-bar {
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            flex: 1;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+        }
+
+        .status-top-nav {
+            position: absolute;
+            top: 25px;
+            left: 0;
+            width: 100%;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10001;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+
+        .viewer-info { display: flex; align-items: center; gap: 10px; color: white; pointer-events: auto; }
+        .viewer-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .close-viewer { font-size: 35px; color: white; cursor: pointer; pointer-events: auto; line-height: 1; }
+
+        #contentArea {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .text-status-display {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 40px;
+            box-sizing: border-box;
+            line-height: 1.4;
+            color: white;
+            word-wrap: break-word;
+        }
+
+        .status-caption {
+            position: absolute;
+            bottom: 110px;
+            width: 100%;
+            text-align: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 17px;
+            z-index: 10006;
+            box-sizing: border-box;
+        }
+
+        .status-meta-info {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10002;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .delete-btn { color: #ff5252; text-decoration: none; font-weight: bold; margin-top: 5px; display: block; }
+
+        /* --- Interaction Layers --- */
+        .interaction-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80%;
+            z-index: 10000;
+            display: flex;
+        }
+
+        .nav-side { height: 100%; width: 30%; cursor: pointer; }
+        .pause-center { height: 100%; width: 40%; cursor: pointer; }
+
+        .reaction-area {
+            position: absolute;
+            bottom: 85px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 10007;
+        }
+
+        .love-btn {
+            background: none;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .love-btn:active { transform: scale(1.6); }
+
+        .reply-box {
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            left: 5%;
+            display: flex;
+            gap: 10px;
+            z-index: 10002;
+        }
+
+        #replyInput {
+            flex: 1;
+            background: rgba(32, 44, 51, 0.9);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: white;
+            outline: none;
+        }
+
+        .send-btn { 
+            background: var(--wa-green); 
+            border: none; 
+            border-radius: 50%; 
+            width: 45px; 
+            height: 45px; 
+            color: white; 
+            cursor: pointer; 
+            font-size: 18px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="status-container">
+        <h2 style="margin-bottom: 25px;">Updates</h2>
+
+        <section>
+            <div class="status-item" onclick="startStatusSequence([
+                {% for s in my_status_group.all_statuses %}
+                {
+                    'id': '{{ s.id }}',
+                    'url': '{% if s.image %}{{ s.image.url }}{% elif s.video %}{{ s.video.url }}{% else %}#{% endif %}',
+                    'type': '{% if s.image %}image{% elif s.video %}video{% else %}text{% endif %}',
+                    'text': '{{ s.text_content|escapejs }}',
+                    'bg_color': '{{ s.bg_color|default:"#00a884" }}',
+                    'view_count': '{{ s.views.count }}',
+                    'viewers_names': '{% for v in s.views.all %}{{ v.viewer.first_name }}{% if not forloop.last %}, {% endif %}{% endfor %}',
+                    'user_name': 'My Status',
+                    'user_img': '{{ request.user.profile.image.url }}',
+                    'can_delete': true
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ])">
+                <div class="avatar-wrapper {% if not my_status_group %}no-status-border{% endif %}">
+                    <img src="{{ request.user.profile.image.url }}" class="avatar-img">
+                    <a href="{% url 'upload_status' %}" class="add-status-btn" onclick="event.stopPropagation();">+</a>
+                </div>
+                <div class="status-info">
+                    <h4>My Status</h4>
+                    <p>{% if my_status_group %}Dhufo si aad u eegto{% else %}Ku dar status-kaaga{% endif %}</p>
+                </div>
+            </div>
+        </section>
+
+        <h5 class="status-header">Recent updates</h5>
+
+        <section>
+            {% for group in grouped_statuses %}
+            <div class="status-item" onclick="startStatusSequence([
+                {% for s in group.all_statuses %}
+                {
+                    'id': '{{ s.id }}',
+                    'url': '{% if s.image %}{{ s.image.url }}{% elif s.video %}{{ s.video.url }}{% else %}#{% endif %}',
+                    'type': '{% if s.image %}image{% elif s.video %}video{% else %}text{% endif %}',
+                    'text': '{{ s.text_content|escapejs }}',
+                    'bg_color': '{{ s.bg_color|default:"#00a884" }}',
+                    'user_name': '{{ group.user.first_name }}',
+                    'user_img': '{{ group.user.profile.image.url }}',
+                    'can_delete': false
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ])">
+                <div class="avatar-wrapper">
+                    <img src="{{ group.user.profile.image.url }}" class="avatar-img">
+                </div>
+                <div class="status-info">
+                    <h4>{{ group.user.first_name }}</h4>
+                    <p>{{ group.last_status.created_at|timesince }} ago</p>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color: var(--wa-secondary); text-align: center; margin-top: 50px;">No updates found</p>
+            {% endfor %}
+        </section>
+    </div>
+
+    <div id="statusViewer">
+        <div class="progress-bar-container" id="progressBarContainer"></div>
+        
+        <div class="status-top-nav">
+            <div class="viewer-info">
+                <img id="viewerAvatar" src="" class="viewer-avatar">
+                <span id="viewerName"></span>
+            </div>
+            <span class="close-viewer" onclick="closeStatus()">&times;</span>
+        </div>
+
+        <div class="interaction-layer">
+            <div class="nav-side" onclick="prevStatus()"></div>
+            <div class="pause-center" 
+                 onmousedown="pauseStatus()" onmouseup="resumeStatus()" 
+                 ontouchstart="pauseStatus()" ontouchend="resumeStatus()"></div>
+            <div class="nav-side" onclick="nextStatus()"></div>
+        </div>
+
+        <div id="contentArea"></div>
+        
+        <div id="captionArea" class="status-caption" style="display: none;"></div>
+
+        <div id="metaArea" class="status-meta-info"></div>
+
+        <div class="reaction-area" id="reactionArea">
+            <button class="love-btn" onclick="sendLove()">❤️</button>
+        </div>
+
+        <div class="reply-box" id="replyBox">
+            <input type="text" id="replyInput" placeholder="Reply..." onfocus="pauseStatus()" onblur="resumeStatus()">
+            <button class="send-btn" onclick="sendReply()">➤</button>
+        </div>
+    </div>
+
+    <script src="/static/js/status.js"></script>
+</body>
+</html>
