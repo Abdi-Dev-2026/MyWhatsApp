@@ -1,22 +1,24 @@
 import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(_gzevg$b4)99l6=xw(3r9k74e2f5sw2*0o=gvoi1j#n7sn=(d'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-(_gzevg$b4)99l6=xw(3r9k74e2f5sw2*0o=gvoi1j#n7sn=(d')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False # Railway dhexdiisa False ka dhig
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# Railway iyo Ngrok labadaba waa u furan yahay
-ALLOWED_HOSTS = ['*']
+# Render iyo Host-yada kale
+ALLOWED_HOSTS = ['*', '.render.com']
 
 # CSRF Origins
 CSRF_TRUSTED_ORIGINS = [
     'https://facebook-cranial-crabbing.ngrok-free.dev',
-    'https://*.up.railway.app', # Tan ayaa Railway u gaar ah
+    'https://*.up.railway.app',
+    'https://*.render.com', # Render si uu u aqbalo
 ]
 
 # Application definition
@@ -28,13 +30,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic', # Si static-ga loogu arko local-ka
     'django.contrib.staticfiles',
     'chat',        # App-kaaga chat-ka
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # 1. WHITE NOISE SI CSS-KU U SHAQEEYO
+    'whitenoise.middleware.WhiteNoiseMiddleware', # WHITE NOISE SI CSS-KU U SHAQEEYO
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,19 +69,19 @@ TEMPLATES = [
 ASGI_APPLICATION = 'whatsapp_backend.asgi.application'
 
 # 4. Channel Layers
-# Fiiro gaar ah: Railway dhexdiisa waxaan u baahan doonaa Redis hadhow
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer', 
     },
 }
 
-# Database
+# --- DATABASE (NEON CONNECTION) ---
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 # Password validation
@@ -103,7 +106,7 @@ USE_TZ = True
 # --- STATIC FILES ---
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = BASE_DIR / 'staticfiles' # Meesha Railway uu ka akhrinayo CSS
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Meesha Render uu ka akhrinayo CSS
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # --- MEDIA FILES ---
@@ -113,7 +116,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- HTTPS & SECURITY (MUHIIM U AH WEBRTC) ---
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True # Wuxuu ku qasbayaa inuu https noqdo
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
